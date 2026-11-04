@@ -1,8 +1,6 @@
 # NexusTrace
 
 NexusTrace is a web-based requirements traceability and change impact analytics system for student software project teams.
-IMS568 Information Management System Project (Capstone), Faculty of Information Science, UiTM Puncak Perdana.
-Author: Nurliyana Najwa binti Roslan (2025381073)
 
 ## Stack
 - Next.js (App Router)
