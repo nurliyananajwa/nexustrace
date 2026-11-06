@@ -4,11 +4,17 @@ import { createClient } from "@/lib/supabase/server";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
 export default async function Landing() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (user) redirect("/teams");
+  const isConfigured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
+  if (isConfigured) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) redirect("/teams");
+  }
 
   const features = [
     {
@@ -45,8 +51,8 @@ export default async function Landing() {
           <Logo />
           <strong style={{ fontSize: 17 }}>{APP_NAME}</strong>
         </div>
-        <Link href="/signin" className="btn primary">
-          Sign in
+        <Link href={isConfigured ? "/signin" : "/preview"} className="btn primary">
+          {isConfigured ? "Sign in" : "Explore preview"}
         </Link>
       </header>
 
@@ -75,8 +81,8 @@ export default async function Landing() {
           {APP_TAGLINE}. NexusTrace helps a student software team know what is
           built, what is tested, and what a change will break.
         </p>
-        <Link href="/signin" className="btn primary" style={{ height: 44, padding: "0 22px", fontSize: 15 }}>
-          Sign in with Google
+        <Link href={isConfigured ? "/signin" : "/preview"} className="btn primary" style={{ height: 44, padding: "0 22px", fontSize: 15 }}>
+          {isConfigured ? "Sign in with Google" : "Explore design preview"}
         </Link>
       </section>
 

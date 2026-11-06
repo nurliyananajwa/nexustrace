@@ -7,6 +7,10 @@ import { createClient } from "@/lib/supabase/client";
 import { APP_NAME } from "@/lib/constants";
 
 function SignInInner() {
+  const isConfigured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
   const params = useSearchParams();
   const next = params.get("next") || "/teams";
   const hadError = params.get("error");
@@ -16,6 +20,7 @@ function SignInInner() {
   );
 
   async function signInWithGoogle() {
+    if (!isConfigured) return;
     setLoading(true);
     setMsg(null);
     const supabase = createClient();
@@ -61,11 +66,17 @@ function SignInInner() {
           NexusTrace uses your Google account. No passwords are stored.
         </p>
 
-        <button className="btn" onClick={signInWithGoogle} disabled={loading}
+        <button className="btn" onClick={signInWithGoogle} disabled={loading || !isConfigured}
           style={{ width: "100%", height: 44 }}>
           <GoogleMark />
           {loading ? "Opening Google…" : "Continue with Google"}
         </button>
+
+        {!isConfigured && (
+          <p style={{ color: "var(--ink-2)", fontSize: 12.5, marginTop: 14 }}>
+            Sign-in needs the NexusTrace Supabase project settings. You can view the public page while it is being set up.
+          </p>
+        )}
 
         {msg && (
           <p style={{ color: "var(--bad)", fontSize: 12.5, marginTop: 14 }}>{msg}</p>
