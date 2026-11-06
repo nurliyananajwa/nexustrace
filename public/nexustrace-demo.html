@@ -307,9 +307,9 @@ code{font-family:var(--mono);background:var(--sunk);padding:1px 6px;border-radiu
 @media(prefers-reduced-motion:reduce){.trail-ring{transition:none}.trail-canvas .trail-affected{animation:none}}
 /* A quieter, full-width map gives each stop room to be read. */
 :root[data-mode=trail]{--bg:#f4f6f5;--surface:#ffffff;--sunk:#eaf0ef;--ink:#172b34;--muted:#536974;--line:#d7e2df;--line-strong:#adc1bf;--accent:#166b70;--accent-soft:#d8edeb;--accent-ink:#0d5c62;--on-accent:#ffffff;--ok:#207c62;--ok-soft:#d8f0e6;--warn:#b27429;--warn-soft:#fff0d7;--bad:#b44b49;--bad-soft:#fae4e2;--shadow:0 16px 36px rgba(23,43,52,.09);color-scheme:light}
-:root[data-mode=trail] .app{display:block;max-width:1480px;margin:0 auto;padding:0 clamp(18px,3.2vw,52px) 32px}
-:root[data-mode=trail] .side{display:none}
-:root[data-mode=trail] main{max-width:none;margin:0;gap:0;padding:0}
+:root[data-mode=trail] .app{display:grid;grid-template-columns:232px minmax(0,1fr);gap:20px;max-width:none;margin:0;padding:16px}
+:root[data-mode=trail] .side{display:flex}
+:root[data-mode=trail] main{max-width:none;margin:0;gap:0;padding:0 0 32px}
 :root[data-mode=trail] .modebar{position:sticky;top:0;z-index:8;background:rgba(244,246,245,.96);backdrop-filter:blur(12px);min-height:76px;padding:12px 2px;border-bottom-color:var(--line)}
 :root[data-mode=trail] .mode-switch{background:#e9efed;border-color:transparent}
 :root[data-mode=trail] .mode-switch button{font-size:13px;padding:9px 18px}
@@ -403,6 +403,55 @@ code{font-family:var(--mono);background:var(--sunk);padding:1px 6px;border-radiu
 .simple-map-stop{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;min-width:120px;text-align:center;color:var(--ink)}.simple-map-stop i{display:block;width:24px;height:24px;border:5px solid var(--accent);border-radius:50%;background:var(--surface);box-shadow:0 0 0 6px var(--bg)}.simple-map-stop.root i{width:48px;height:48px;border-width:7px;background:var(--accent-soft)}.simple-map-stop.good i{border-color:var(--ok)}.simple-map-stop.warn i{border-color:var(--warn)}.simple-map-stop.bad i{border-color:var(--bad)}.simple-map-stop b{font:600 12px var(--mono)}.simple-map-stop small{color:var(--muted);font-size:11px;line-height:1.25;max-width:140px}.simple-map-empty{position:absolute;top:50%;transform:translate(-50%,-50%);color:var(--muted);font-size:12px}
 .simple-trace-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.simple-trace-footer p{margin:0 auto 0 0;color:var(--muted);font-size:12px}.simple-trace-footer p button{font:inherit;border:0;background:transparent;color:var(--accent-ink);cursor:pointer;text-decoration:underline}
 @media(max-width:850px){.simple-flow{gap:6px}.simple-flow small{display:none}.simple-trace-layout{grid-template-columns:1fr}.simple-trace-picker{border-right:0;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:10px}.simple-trace-choices{max-height:150px}.simple-numbers{flex-wrap:wrap}.simple-numbers div{min-width:110px}.nav-more{display:flex;align-items:center;gap:8px;border:0;padding:0;margin:0}.nav-more summary{white-space:nowrap}.nav-more[open]{flex:none}.nav-more[open] button{white-space:nowrap;width:auto}}
+/* Transit map: requirements are colored lines; work and verification are stops. */
+.metro-page{display:flex;flex-direction:column;gap:17px;padding:24px 0 32px;min-width:0}
+.metro-head{display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap}
+.metro-head h1{font-size:clamp(28px,3vw,36px);margin:4px 0 5px}
+.metro-head p{margin:0;color:var(--muted);font-size:14px;max-width:72ch}
+.metro-tools{display:flex;align-items:end;gap:10px;flex-wrap:wrap}
+.metro-tools label{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.metro-tools select{font:600 13px var(--sans);color:var(--ink);min-height:42px;padding:8px 34px 8px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface)}
+.metro-tools .btn[aria-pressed=true]{background:#ffdfac;border-color:#edb56b;color:#5a340b}
+.metro-shell{background:#0d1926;color:#eaf6f5;border-radius:17px;border:1px solid #23394a;overflow:hidden;box-shadow:0 18px 38px rgba(17,43,53,.13)}
+.metro-shell-top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 23px;border-bottom:1px solid #2a3e4d;flex-wrap:wrap}
+.metro-shell-top strong{font-size:13px;letter-spacing:.02em}
+.metro-shell-top span{color:#a6bcc5;font-size:12px}
+.metro-canvas-scroll{overflow-x:auto;overflow-y:hidden;background-color:#0d1926;background-image:linear-gradient(rgba(115,153,166,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(115,153,166,.07) 1px,transparent 1px);background-size:28px 28px}
+.metro-canvas{display:block;width:100%;min-width:940px;height:auto;min-height:520px}
+.metro-heading{fill:#91aab7;font:700 11px var(--mono);letter-spacing:1.5px}
+.metro-guide{stroke:#304657;stroke-width:1;stroke-dasharray:3 7}
+.metro-route{cursor:pointer;transition:opacity .2s ease}
+.metro-route.faded{opacity:.16}.metro-route:not(.selected):not(.faded){opacity:.78}
+.metro-route .route-track{fill:none;stroke:var(--route);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--route) 35%,transparent))}
+.metro-route.selected .route-track{stroke-width:7}
+.metro-route:hover{opacity:1!important}
+.metro-route:focus-visible{outline:none}.metro-route:focus-visible .route-track{stroke-width:9}
+.metro-route .route-id{fill:var(--route);font:700 13px var(--mono)}
+.metro-route .route-title{fill:#edf8f7;font:600 15px var(--sans)}
+.metro-route .route-meta{fill:#9fb6c1;font:12px var(--sans)}
+.metro-station{cursor:pointer}
+.metro-station .outer{fill:#0d1926;stroke:var(--route);stroke-width:5}
+.metro-station .inner{fill:var(--route)}
+.metro-station .station-id{fill:#eaf6f5;font:700 12px var(--mono)}
+.metro-station .station-title{fill:#9fb6c1;font:12px var(--sans)}
+.metro-station.failed .inner{fill:#ff716b}.metro-station.pending .inner{fill:#ffbd64}
+.metro-station.impact .outer{stroke:#ffbd64;filter:drop-shadow(0 0 7px #ffbd64)}
+.metro-station:hover .outer,.metro-station:focus-visible .outer{stroke-width:8}
+.metro-station:focus-visible{outline:none}
+.metro-empty-stop{fill:#a3b4bd;font:12px var(--sans)}
+.metro-transfer{fill:none;stroke:#667e8d;stroke-width:2;stroke-dasharray:5 6;opacity:.76}
+.metro-shared{fill:none;stroke:#b5d4dc;stroke-width:3;opacity:.72}
+.metro-transfer.impact{stroke:#ffbd64;stroke-width:3;opacity:1;filter:drop-shadow(0 0 5px #ffbd64)}
+.metro-transfer-dot{fill:#0d1926;stroke:#8196a3;stroke-width:2}.metro-transfer-dot.impact{stroke:#ffbd64}
+.metro-info{border-top:1px solid #2a3e4d;padding:18px 23px;display:flex;align-items:center;gap:20px;justify-content:space-between;flex-wrap:wrap;background:#102131}
+.metro-info-main{min-width:0;flex:1 1 400px}.metro-info .label{color:#8daeb8}.metro-info h2{font-size:19px;margin:4px 0}.metro-info p{color:#b5cbd1;font-size:13px;margin:0;max-width:70ch;line-height:1.45}
+.metro-info .btn{background:transparent;color:#eaf6f5;border-color:#5c7888}.metro-info .btn:hover{background:#1c3445}
+.metro-info-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.metro-info-tags span{font-size:11px;padding:3px 8px;border:1px solid #466170;border-radius:999px;color:#c5d7db}
+.metro-impact-note{padding:11px 20px;background:#533a1e;color:#ffe8bf;font-size:13px;border-top:1px solid #76512a}
+.metro-legend{display:flex;align-items:center;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:12px}.metro-legend span{display:inline-flex;align-items:center;gap:6px}.metro-legend i{width:12px;height:12px;border:3px solid var(--accent);border-radius:50%}.metro-legend i.transfer{border-color:#8196a3}.metro-legend i.alert{border-color:#ffbd64}
+.metro-legend i.shared{border-color:#b5d4dc}
+@media(max-width:880px){:root[data-mode=trail] .app{grid-template-columns:minmax(0,1fr)}:root[data-mode=trail] .side{position:static}.metro-page{padding-top:16px}.metro-tools{width:100%}.metro-shell-top{padding:13px 16px}.metro-info{padding:16px}}
+@media(prefers-reduced-motion:reduce){.metro-route{transition:none}}
 </style>
 
 <div class="lp" id="landing">
@@ -756,7 +805,7 @@ function stats(){
 }
 
 /* ---------- shell ---------- */
-let view='dashboard',charts=[],ui={mode:'workbench',trailStage:'project',trailModule:null,search:'',module:'All',status:'All',gaps:false,mxModule:'All',traceReq:'REQ-01',cr:'CR-05',tFilter:'All',draft:'The report page should load fast and show several charts, tables etc. so users can easily understand the data.'};
+let view='dashboard',charts=[],ui={mode:'workbench',trailStage:'project',trailModule:null,search:'',module:'All',status:'All',gaps:false,mxModule:'All',traceReq:'REQ-13',traceModule:'Change impact',traceImpact:false,metroStation:null,cr:'CR-05',tFilter:'All',draft:'The report page should load fast and show several charts, tables etc. so users can easily understand the data.'};
 try { if(localStorage.getItem('nexustrace-requirements-view')==='trail')ui.mode='trail'; } catch(e) {}
 function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600)}
 function go(v){view=v;closeLayer();render();window.scrollTo({top:0})}
@@ -772,10 +821,10 @@ function render(){
   if(view==='teams'&&$('#navTeams').hidden)view='dashboard';
   document.querySelectorAll('#nav button').forEach(b=>{if(b.dataset.view===view)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   if(view==='dashboard')simpleDashboard();
-  else if(view==='requirements')ui.mode==='trail'?simpleTrace():simpleRequirements();
+  else if(view==='requirements')ui.mode==='trail'?metroTrace():simpleRequirements();
   else ({teams:teamsView,tests:testsView,matrix,changes,quality})[view]();
   const map=view==='requirements'&&ui.mode==='trail';
-  $('#view').insertAdjacentHTML('afterbegin',`<div class="modebar">${map?`<span class="mode-wordmark"><i aria-hidden="true">⌁</i><span><strong>NexusTrace</strong><small>${esc(P.name)} · Requirements</small></span></span>`:`<span>${esc(P.name)} <b>/ ${view==='dashboard'?'Overview':view==='matrix'?'Traceability matrix':view==='requirements'?'Requirements':view[0].toUpperCase()+view.slice(1)}</b></span>`}${view==='requirements'?`<div class="mode-switch" role="group" aria-label="Requirement view"><button data-act="mode" data-mode="workbench" aria-pressed="${ui.mode==='workbench'}">▦ List</button><button data-act="mode" data-mode="trail" aria-pressed="${ui.mode==='trail'}">◎ Trace map</button></div>`:''}<span class="mode-demo">Sample data</span></div>`);
+  $('#view').insertAdjacentHTML('afterbegin',`<div class="modebar">${map?`<span class="mode-wordmark"><i aria-hidden="true">⌁</i><span><strong>NexusTrace</strong><small>${esc(P.name)} · Requirements</small></span></span>`:`<span>${esc(P.name)} <b>/ ${view==='dashboard'?'Overview':view==='matrix'?'Traceability matrix':view==='requirements'?'Requirements':view[0].toUpperCase()+view.slice(1)}</b></span>`}${view==='requirements'?`<div class="mode-switch" role="group" aria-label="Requirement view"><button data-act="mode" data-mode="workbench" aria-pressed="${ui.mode==='workbench'}">▦ List</button><button data-act="mode" data-mode="trail" aria-pressed="${ui.mode==='trail'}">◎ Transit map</button></div>`:''}<span class="mode-demo">Sample data</span></div>`);
   try { localStorage.setItem('nexustrace-demo-projects',JSON.stringify(PROJECTS)); } catch(e) {}
 }
 const header=(t,s,extra='')=>`<div class="head"><div><h1>${t}</h1><p class="sub">${s}</p></div>${extra}</div>`;
@@ -788,13 +837,16 @@ document.addEventListener('click',e=>{
   if(act==='trail-module'){ui.trailModule=a.dataset.module;ui.trailStage='module';render();window.scrollTo({top:0})}
   if(act==='trail-req'){ui.traceReq=a.dataset.id;ui.trailModule=q(ui.traceReq)?.module||ui.trailModule;ui.trailStage='requirement';render();window.scrollTo({top:0})}
   if(act==='trace-pick'){ui.traceReq=a.dataset.id;render()}
+  if(act==='metro-select'){ui.traceReq=a.dataset.id;ui.metroStation=null;render()}
+  if(act==='metro-station'){ui.traceReq=a.dataset.req;ui.metroStation={kind:a.dataset.kind,id:a.dataset.id,req:a.dataset.req};render()}
+  if(act==='metro-impact'){ui.traceImpact=!ui.traceImpact;ui.metroStation=null;render()}
   if(act==='open')openReq(a.dataset.id);
   if(act==='go'){if(a.dataset.cr)ui.cr=a.dataset.cr;go(a.dataset.v)}
   if(act==='close')closeLayer();
   if(act==='newtest')openTest({});
   if(act==='kpi'){const k=a.dataset.k;if(k==='reqs'){ui.search='';ui.module='All';ui.status='All';go('requirements')}if(k==='cov'){ui.gaps=true;ui.mxModule='All';go('matrix')}if(k==='pass'){ui.tFilter='Failed';go('tests')}if(k==='pend')go('changes')}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(tourI>=0)endTour();else closeLayer()}if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('row')){e.preventDefault();openReq(e.target.dataset.id)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(tourI>=0)endTour();else closeLayer()}if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('row')){e.preventDefault();openReq(e.target.dataset.id)}if((e.key==='Enter'||e.key===' ')&&e.target.closest('.metro-route,.metro-station')){e.preventDefault();e.target.click()}});
 
 /* ---------- clear starting views ---------- */
 function simpleDashboard(){
@@ -825,6 +877,46 @@ function simpleTrace(){
   $('#view').innerHTML=`<section class="simple-trace-page"><div class="simple-trace-head"><div><span class="label">TRACE MAP</span><h1>Follow a requirement</h1><p>Choose one requirement. See the tasks that build it and the tests that check it.</p></div><button class="btn" data-act="mode" data-mode="workbench">Back to list</button></div><div class="simple-trace-layout"><aside class="simple-trace-picker"><label for="traceSearch">Choose a requirement</label><input type="search" id="traceSearch" value="${esc(ui.search)}" placeholder="Search requirements"><div id="traceChoices" class="simple-trace-choices"></div></aside><div class="simple-trace-main"><div class="simple-selected"><span class="simple-req-id">${esc(r.id)} · ${esc(r.module)}</span><h2>${esc(r.title)}</h2><p>${esc(r.text)}</p><div class="simple-selected-meta"><span>${linkedTasks.length} task${linkedTasks.length===1?'':'s'}</span><span>${linkedTests.length} test${linkedTests.length===1?'':'s'}</span>${pending?`<span class="simple-warning">${esc(pending.id)} awaiting review</span>`:''}</div></div><div class="simple-map-scroll"><div class="simple-map" role="img" aria-label="${esc(r.id)} connects to ${linkedTasks.length} tasks and ${linkedTests.length} tests"><svg viewBox="0 0 900 430" preserveAspectRatio="none" aria-hidden="true"><text x="80" y="48">REQUIREMENT</text><text x="355" y="48">BUILT BY TASKS</text><text x="625" y="48">CHECKED BY TESTS</text>${paths}</svg>${station(130,220,r.id,r.title,'root')}${linkedTasks.length?linkedTasks.map((t,i)=>station(390,taskYs[i],t.id,t.title,t.status==='Done'?'good':'')).join(''):'<span class="simple-map-empty" style="left:43%">No task linked</span>'}${linkedTests.length?linkedTests.map((t,i)=>station(665,testYs[i],t.id,t.title,t.status==='Failed'?'bad':t.status==='Passed'?'good':'warn')).join(''):'<span class="simple-map-empty" style="left:74%">No test linked</span>'}</div></div><div class="simple-trace-footer"><p>${linkedReqs.length?`Also affected: ${linkedReqs.map(x=>`<button data-act="trace-pick" data-id="${esc(x.id)}">${esc(x.id)} · ${esc(x.title)}</button>`).join(' ')}`:'No other requirement depends on this one.'}</p><button class="btn primary" data-act="open" data-id="${esc(r.id)}">Open details</button>${pending?`<button class="btn" data-act="go" data-v="changes" data-cr="${esc(pending.id)}">Review change</button>`:''}</div></div></div></section>`;
   const fill=()=>{const term=ui.search.trim().toLowerCase();const rows=reqs.filter(x=>!term||(x.id+' '+x.title).toLowerCase().includes(term));$('#traceChoices').innerHTML=rows.map(x=>`<button class="simple-trace-choice ${x.id===r.id?'active':''}" data-act="trace-pick" data-id="${esc(x.id)}" aria-current="${x.id===r.id?'true':'false'}"><span class="simple-req-id">${esc(x.id)}</span><span>${esc(x.title)}</span>${testsOf(x.id).length?'':'<i aria-label="No linked test" title="No linked test"></i>'}</button>`).join('')||'<p class="empty">No requirements found.</p>'};
   fill();$('#traceSearch').oninput=e=>{ui.search=e.target.value;fill()};
+}
+
+/* ---------- transit map ---------- */
+function metroTrace(){
+  const palette=['#5ae0c6','#ffb75d','#93a8ff','#ef85b2','#c3e57b','#bca5ff'];
+  const modules=MODULES.filter(m=>reqs.some(r=>r.module===m));
+  if(!modules.includes(ui.traceModule))ui.traceModule=modules[0];
+  const lines=reqs.filter(r=>r.module===ui.traceModule);
+  if(!lines.some(r=>r.id===ui.traceReq))ui.traceReq=lines[0].id;
+  const selected=q(ui.traceReq),height=Math.max(530,126+lines.length*112);
+  const routeY=new Map(lines.map((r,i)=>[r.id,122+i*112]));
+  const sharedIds=tests.filter(t=>lines.filter(r=>t.reqs.includes(r.id)).length>1).map(t=>t.id);
+  const sharedTestX=new Map(sharedIds.map((id,i)=>[id,sharedIds.length===1?900:790+i*110]));
+  const impactItems=impactOf(selected.id).flat();
+  const affectedReqs=new Set([selected.id,...impactItems.filter(x=>x.kind==='Requirement').map(x=>x.id)]);
+  const count=kind=>new Set(impactItems.filter(x=>x.kind===kind).map(x=>x.id)).size;
+  const short=(s,n=19)=>s.length>n?s.slice(0,n-1)+'…':s;
+  const station=(item,x,y,kind,reqId,affected)=>`<g class="metro-station ${item.status==='Failed'?'failed':item.status==='Not run'||item.status==='To do'?'pending':''} ${affected?'impact':''}" data-act="metro-station" data-kind="${kind}" data-id="${esc(item.id)}" data-req="${esc(reqId)}" role="button" tabindex="0" aria-label="${kind} ${esc(item.id)}: ${esc(item.title)}, ${esc(item.status)}"><title>${esc(item.title)} · ${esc(item.status)}</title><circle class="outer" cx="${x}" cy="${y}" r="13"/><circle class="inner" cx="${x}" cy="${y}" r="4"/><text class="station-id" x="${x}" y="${y+32}" text-anchor="middle">${esc(item.id)}</text><text class="station-title" x="${x}" y="${y+49}" text-anchor="middle">${esc(short(item.title,kind==='Test'?15:19))}</text></g>`;
+  const transfers=deps.filter(([child,parent])=>routeY.has(child)&&routeY.has(parent)).map(([child,parent],i)=>{
+    const x=315+(i%3)*16,y1=routeY.get(parent),y2=routeY.get(child),lit=ui.traceImpact&&affectedReqs.has(child)&&affectedReqs.has(parent);
+    return `<path class="metro-transfer ${lit?'impact':''}" d="M ${x} ${y1} V ${y2}"><title>${esc(parent)} connects to ${esc(child)}</title></path><circle class="metro-transfer-dot ${lit?'impact':''}" cx="${x}" cy="${y1}" r="5"/><circle class="metro-transfer-dot ${lit?'impact':''}" cx="${x}" cy="${y2}" r="5"/>`;
+  }).join('');
+  const sharedTransfers=sharedIds.map(id=>{
+    const x=sharedTestX.get(id),ys=lines.filter(r=>testsOf(r.id).some(t=>t.id===id)).map(r=>routeY.get(r.id));
+    return `<path class="metro-shared" d="M ${x} ${Math.min(...ys)} V ${Math.max(...ys)}"><title>${esc(id)} checks ${ys.length} requirement lines</title></path>`;
+  }).join('');
+  const routes=lines.map((r,i)=>{
+    const y=routeY.get(r.id),color=palette[i%palette.length],tk=tasksOf(r.id),ts=testsOf(r.id),affected=ui.traceImpact&&affectedReqs.has(r.id);
+    const cls=ui.traceImpact&&!affected?'faded':r.id===selected.id?'selected':'';
+    const taskXs=tk.length===1?[495]:tk.length===2?[432,570]:tk.map((_,j)=>405+j*92);
+    const usedTestX=new Set(sharedTestX.values());
+    const testXs=ts.map((t,j)=>{if(sharedTestX.has(t.id))return sharedTestX.get(t.id);if(ts.length===1)return 900;const x=[780,900,1020].find(v=>[...usedTestX].every(u=>Math.abs(u-v)>=105))??780+j*110;usedTestX.add(x);return x});
+    return `<g class="metro-route ${cls}" style="--route:${color}" data-act="metro-select" data-id="${esc(r.id)}" role="button" tabindex="0" aria-label="Line ${esc(r.id)}: ${esc(r.title)}; ${tk.length} tasks, ${ts.length} tests"><title>Click to follow ${esc(r.id)} · ${esc(r.title)}</title><text class="route-id" x="48" y="${y-7}">${esc(r.id)}</text><text class="route-title" x="48" y="${y+15}">${esc(short(r.title,23))}</text><circle cx="273" cy="${y}" r="8" fill="#0d1926" stroke="${color}" stroke-width="4"/><path class="route-track" d="M 282 ${y} H 363 Q 378 ${y} 389 ${y+14} H 646 Q 672 ${y+14} 691 ${y} H ${ts.length?1050:805}"/>${tk.length?tk.map((t,j)=>station(t,taskXs[j],y+14,'Task',r.id,affected)).join(''):`<text class="metro-empty-stop" x="465" y="${y+43}">No task linked</text>`}${ts.length?ts.map((t,j)=>station(t,testXs[j],y,'Test',r.id,affected)).join(''):`<path d="M 805 ${y} H 1020" stroke="#607585" stroke-width="2" stroke-dasharray="4 7"/><circle cx="835" cy="${y}" r="11" fill="#0d1926" stroke="#ffbd64" stroke-width="3" stroke-dasharray="3 3"/><text class="metro-empty-stop" x="856" y="${y+5}">No test linked</text>`}</g>`;
+  }).join('');
+  const stationItem=ui.metroStation&&ui.metroStation.req===selected.id?(ui.metroStation.kind==='Task'?tasks:tests).find(x=>x.id===ui.metroStation.id):null;
+  const pending=crs.find(c=>c.req===selected.id&&c.status==='Pending');
+  const infoTitle=stationItem?`${ui.metroStation.kind} ${stationItem.id} · ${stationItem.title}`:`${selected.id} · ${selected.title}`;
+  const infoText=stationItem?`${ui.metroStation.kind==='Task'?'Built for':'Checks'} ${selected.id}. Current status: ${stationItem.status}.`:selected.text;
+  $('#view').innerHTML=`<section class="metro-page"><div class="metro-head"><div><span class="label">VISUAL VIEW</span><h1>Project transit map</h1><p>Each colored line is a requirement. Tasks and tests are stops. Dotted links show dependencies. Shared test stops connect lines.</p></div><div class="metro-tools"><label for="metroModule">Show module<select id="metroModule">${modules.map(m=>`<option value="${esc(m)}" ${m===ui.traceModule?'selected':''}>${esc(m)}</option>`).join('')}</select></label><button class="btn" data-act="metro-impact" aria-pressed="${ui.traceImpact}">${ui.traceImpact?'Clear impact preview':'Preview change impact'}</button></div></div><div class="metro-shell"><div class="metro-shell-top"><strong>${esc(ui.traceModule)} · ${lines.length} requirement lines</strong><span>Choose a line or station to inspect it</span></div><div class="metro-canvas-scroll"><svg class="metro-canvas" viewBox="0 0 1100 ${height}" aria-label="Transit map of ${esc(ui.traceModule)} requirements"><text class="metro-heading" x="48" y="54">REQUIREMENT LINES</text><text class="metro-heading" x="403" y="54">BUILD / TASK STOPS</text><text class="metro-heading" x="768" y="54">VERIFY / TEST STOPS</text><path class="metro-guide" d="M 370 70 V ${height-24} M 720 70 V ${height-24}"/>${transfers}${sharedTransfers}${routes}</svg></div>${ui.traceImpact?`<div class="metro-impact-note">If ${esc(selected.id)} changes: ${count('Requirement')} other requirement${count('Requirement')===1?'':'s'}, ${count('Task')} task${count('Task')===1?'':'s'} and ${count('Test')} test${count('Test')===1?'':'s'} need review. This is a preview; no data changes.</div>`:''}<div class="metro-info"><div class="metro-info-main"><span class="label">${stationItem?'SELECTED STATION':'SELECTED LINE'}</span><h2>${esc(infoTitle)}</h2><p>${esc(infoText)}</p><div class="metro-info-tags"><span>${tasksOf(selected.id).length} tasks</span><span>${testsOf(selected.id).length} tests</span><span>${selected.status}</span>${pending?`<span>${esc(pending.id)} pending</span>`:''}</div></div><button class="btn" data-act="open" data-id="${esc(selected.id)}">Open requirement details →</button></div></div><div class="metro-legend"><span><i></i>Route = requirement</span><span><i class="transfer"></i>Dotted link = dependency</span><span><i class="shared"></i>Solid link = shared test</span><span><i class="alert"></i>Amber = needs review or missing test</span></div></section>`;
+  $('#metroModule').onchange=e=>{ui.traceModule=e.target.value;ui.traceReq=reqs.find(r=>r.module===ui.traceModule).id;ui.metroStation=null;ui.traceImpact=false;render()};
 }
 
 /* ---------- dashboard ---------- */
@@ -958,7 +1050,7 @@ function requirements(){
 /* ---------- requirement drawer ---------- */
 function closeLayer(){$('#layer').innerHTML='';window.removeEventListener('resize',drawLinks)}
 function openReq(id){
-  ui.traceReq=id;
+  ui.traceReq=id;ui.traceModule=q(id)?.module||ui.traceModule;
   const r=q(id);const a=analyze(r.text);const ts=testsOf(id),tk=tasksOf(id);const pend=crs.find(c=>c.req===id&&c.status==='Pending');
   $('#layer').innerHTML=`<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dT">
     <button class="btn sm x" data-act="close" aria-label="Close">Close</button>
