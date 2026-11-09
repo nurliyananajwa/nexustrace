@@ -75,9 +75,10 @@ export default async function Landing() {
           {APP_TAGLINE}. NexusTrace helps a student software team know what is
           built, what is tested, and what a change will break.
         </p>
-        <Link href="/signin" className="btn primary" style={{ height: 44, padding: "0 22px", fontSize: 15 }}>
-          Sign in with Google
-        </Link>
+        <div style={{ display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+          <Link href="/preview" className="btn primary" style={{ height: 44, padding: "0 22px", fontSize: 15 }}>View design preview</Link>
+          <Link href="/signin" className="btn" style={{ height: 44, padding: "0 22px", fontSize: 15 }}>Open real workspace</Link>
+        </div>
       </section>
 
       <section
