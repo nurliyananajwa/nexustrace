@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Public routes that do not require a signed-in user.
-const PUBLIC_PATHS = ["/", "/signin", "/auth"];
+const PUBLIC_PATHS = ["/", "/signin", "/auth", "/preview"];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });

@@ -98,18 +98,6 @@ export default async function Landing() {
         ))}
       </section>
 
-      <footer
-        style={{
-          textAlign: "center",
-          padding: "24px",
-          color: "var(--ink-3)",
-          fontSize: 12.5,
-          borderTop: "1px solid var(--border)",
-        }}
-      >
-        {APP_NAME} — Nurliyana Najwa binti Roslan (2025381073), Faculty of
-        Information Science, UiTM Puncak Perdana.
-      </footer>
     </main>
   );
 }

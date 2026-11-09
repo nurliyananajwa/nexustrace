@@ -7,12 +7,13 @@ import {
   REQ_STATUS, REQ_STATUS_LABEL, PRIORITY_LABEL, type Role,
 } from "@/lib/constants";
 import { checkQuality, GRADE_LABEL } from "@/lib/quality";
-import { PageHeader, StatusPill, Empty } from "@/components/ui";
+import { StatusPill, Empty } from "@/components/ui";
 import { createRequirement, addTask, linkTest, proposeChange } from "./actions";
+import CircuitView from "./CircuitView";
 
 type Req = Tables<"requirements">;
 type Mod = Tables<"modules">;
-type Test = { id: string; code: string; title: string };
+type Test = { id: string; code: string; title: string; result: string };
 type Link = { test_case_id: string; requirement_id: string };
 type Task = { id: string; title: string; status: string; requirement_id: string | null };
 type Version = { id: string; requirement_id: string; version: number; title: string; created_at: string };
@@ -35,6 +36,8 @@ export default function RequirementsView(props: {
   const [status, setStatus] = useState("all");
   const [selId, setSelId] = useState<string | null>(null);
   const [modal, setModal] = useState<null | "new" | "propose" | "task" | "link">(null);
+  const [mode, setMode] = useState<"list" | "visual">("list");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const open = search.get("open");
@@ -62,52 +65,40 @@ export default function RequirementsView(props: {
 
   return (
     <>
-      <PageHeader
-        title="Requirements"
-        subtitle="Record and maintain every requirement. Pick one to see its wording, links and version history."
-        actions={<button className="btn primary" onClick={() => setModal("new")}>+ New requirement</button>}
-      />
+      <header className="page-heading">
+        <div><p className="page-kicker">REQUIREMENTS</p><h1 className="page-title">The source of every trace.</h1><p className="page-lead">Write what the system must do, then connect the work and tests that support it.</p></div>
+        <button className="btn primary" onClick={() => setModal("new")}>+ New requirement</button>
+      </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: selected ? "minmax(0,1fr) 340px" : "1fr", gap: 16, alignItems: "start" }}>
+      <div className="toolbar">
+        <div className="mode-switch" role="group" aria-label="Requirement view">
+          <button className={mode === "list" ? "active" : ""} aria-pressed={mode === "list"} onClick={() => setMode("list")}>▦ &nbsp; Card view</button>
+          <button className={mode === "visual" ? "active" : ""} aria-pressed={mode === "visual"} onClick={() => setMode("visual")}>⌁ &nbsp; Circuit view</button>
+        </div>
+        <input className="input search" aria-label="Search requirements" placeholder="Search by ID or title" value={q} onChange={(e) => setQ(e.target.value)} />
+        <select className="input" aria-label="Filter by module" value={mod} onChange={(e) => setMod(e.target.value)}><option value="all">All modules</option>{modules.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
+        <select className="input" aria-label="Filter by status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="all">All statuses</option>{REQ_STATUS.map((s) => <option key={s} value={s}>{REQ_STATUS_LABEL[s]}</option>)}</select>
+      </div>
+
+      <div className={`data-layout ${selected ? "" : "no-selection"} ${mode === "visual" ? "visual-mode" : ""}`}>
         <div>
-          <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-            <input className="input" placeholder="Search requirements" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 240 }} />
-            <select className="input" value={mod} onChange={(e) => setMod(e.target.value)} style={{ maxWidth: 160 }}>
-              <option value="all">All modules</option>
-              {modules.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-            </select>
-            <select className="input" value={status} onChange={(e) => setStatus(e.target.value)} style={{ maxWidth: 150 }}>
-              <option value="all">All statuses</option>
-              {REQ_STATUS.map((s) => <option key={s} value={s}>{REQ_STATUS_LABEL[s]}</option>)}
-            </select>
-          </div>
-
-          <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+          {mode === "visual" ? <CircuitView requirements={filtered} tasks={tasks} tests={tests} links={links} selectedId={selId} onSelect={setSelId} /> : <div className="req-grid">
             {filtered.length === 0 ? (
               <Empty>No requirements yet. Add your first with “New requirement”.</Empty>
             ) : (
-              <table>
-                <thead>
-                  <tr><th>ID</th><th>Requirement</th><th>Status</th><th>Tests</th><th>Quality</th></tr>
-                </thead>
-                <tbody>
-                  {filtered.map((r) => {
+              filtered.map((r) => {
                     const qr = checkQuality(`${r.title}. ${r.description ?? ""}`);
                     const nTests = testsByReq.get(r.id)?.length ?? 0;
+                    const nTasks = tasks.filter((task) => task.requirement_id === r.id).length;
                     return (
-                      <tr key={r.id} onClick={() => setSelId(r.id)} style={{ cursor: "pointer", background: r.id === selId ? "var(--brand-tint)" : undefined }}>
-                        <td><span className="id">{r.code}</span></td>
-                        <td style={{ maxWidth: 320 }}>{r.title}</td>
-                        <td><StatusPill value={r.status} label={REQ_STATUS_LABEL[r.status as keyof typeof REQ_STATUS_LABEL] ?? r.status} /></td>
-                        <td>{nTests === 0 ? <span className="pill p-warn">0</span> : nTests}</td>
-                        <td><StatusPill value={qr.grade} label={String(qr.score)} /></td>
-                      </tr>
+                      <button type="button" key={r.id} onClick={() => setSelId(r.id)} className={`req-tile ${r.id === selId ? "selected" : ""}`} aria-pressed={r.id === selId}>
+                        <span className="req-tile-top"><span className="id">{r.code}</span><StatusPill value={r.status} label={REQ_STATUS_LABEL[r.status as keyof typeof REQ_STATUS_LABEL] ?? r.status} /></span>
+                        <strong>{r.title}</strong>
+                        <span className="req-tile-bottom"><span>{nTasks} task{nTasks === 1 ? "" : "s"}</span><span className={nTests === 0 ? "missing-link" : ""}>{nTests} test{nTests === 1 ? "" : "s"}</span><span>Quality {qr.score}</span></span>
+                      </button>
                     );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
+                  })
+            )}</div>}
         </div>
 
         {selected && (
@@ -134,7 +125,7 @@ export default function RequirementsView(props: {
         <SimpleModal title={`Add a task to ${selected.code}`} label="Task title"
           placeholder="For example: Build the sign-in page"
           onClose={() => setModal(null)}
-          onSubmit={async (v) => { await addTask(projectId, selected.id, v); setModal(null); router.refresh(); }} />
+          onSubmit={async (v) => { const result = await addTask(projectId, selected.id, v); if (result.error) { setError(result.error); return; } setError(null); setModal(null); router.refresh(); }} />
       )}
       {modal === "link" && selected && (
         <LinkTestModal projectId={projectId} requirementId={selected.id}
@@ -145,6 +136,7 @@ export default function RequirementsView(props: {
         <ProposeModal projectId={projectId} req={selected}
           onClose={() => setModal(null)} onDone={() => { setModal(null); router.refresh(); }} />
       )}
+      {error && <p className="form-error" role="alert">{error}</p>}
     </>
   );
 }
@@ -158,7 +150,7 @@ function DetailPanel({ req, tests, links, tasks, versions, onClose, onTask, onLi
   const linkedTests = tests.filter((t) => linkedTestIds.includes(t.id));
 
   return (
-    <div className="card" style={{ padding: 18, position: "sticky", top: 20 }}>
+    <div className="card detail-panel">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span className="id" style={{ fontSize: 14 }}>{req.code}</span>
