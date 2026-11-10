@@ -10,25 +10,18 @@ export function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "flex-start",
-        justifyContent: "space-between",
-        gap: 16,
-        marginBottom: 20,
-      }}
-    >
+    <header className="page-heading">
       <div>
-        <h1 style={{ fontSize: 24, margin: 0, letterSpacing: "-0.01em" }}>{title}</h1>
+        <p className="page-kicker">NEXUSTRACE / WORKSPACE</p>
+        <h1 className="page-title">{title}</h1>
         {subtitle && (
-          <p style={{ color: "var(--ink-2)", margin: "4px 0 0", fontSize: 13.5, maxWidth: 620 }}>
+          <p className="page-lead">
             {subtitle}
           </p>
         )}
       </div>
       {actions && <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>{actions}</div>}
-    </div>
+    </header>
   );
 }
 
