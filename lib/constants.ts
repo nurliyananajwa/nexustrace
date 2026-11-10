@@ -41,11 +41,3 @@ export const CR_STATUS_LABEL: Record<CRStatus, string> = {
   rejected: "Rejected",
 };
 
-export const NAV = [
-  { key: "dashboard", label: "Dashboard" },
-  { key: "requirements", label: "Requirements" },
-  { key: "tests", label: "Test cases" },
-  { key: "matrix", label: "Traceability matrix" },
-  { key: "changes", label: "Change requests" },
-  { key: "quality", label: "Quality check" },
-] as const;

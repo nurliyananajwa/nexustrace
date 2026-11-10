@@ -2,22 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { checkQuality } from "@/lib/quality";
-
-async function nextCode(projectId: string, prefix: "FR" | "NFR") {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("requirements")
-    .select("code")
-    .eq("project_id", projectId)
-    .like("code", `${prefix}%`);
-  let max = 0;
-  for (const r of data ?? []) {
-    const m = r.code.match(/\d+/);
-    if (m) max = Math.max(max, parseInt(m[0], 10));
-  }
-  return `${prefix}${String(max + 1).padStart(2, "0")}`;
-}
+import { nextCode } from "@/lib/codes";
 
 export async function createRequirement(projectId: string, form: {
   title: string;
@@ -28,8 +13,7 @@ export async function createRequirement(projectId: string, form: {
 }) {
   const supabase = await createClient();
   const prefix = form.type === "non_functional" ? "NFR" : "FR";
-  const code = await nextCode(projectId, prefix);
-  const q = checkQuality(`${form.title}. ${form.description}`);
+  const code = await nextCode(supabase, "requirements", projectId, prefix);
 
   const { error } = await supabase.from("requirements").insert({
     project_id: projectId,
@@ -39,7 +23,6 @@ export async function createRequirement(projectId: string, form: {
     type: form.type,
     priority: form.priority,
     module_id: form.module_id,
-    quality_score: q.score,
   });
   if (error) return { error: error.message };
   revalidatePath(`/projects/${projectId}/requirements`);
@@ -74,17 +57,7 @@ export async function proposeChange(projectId: string, requirementId: string, fo
   reason: string;
 }) {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("change_requests")
-    .select("code")
-    .eq("project_id", projectId)
-    .like("code", "CR%");
-  let max = 0;
-  for (const r of data ?? []) {
-    const m = r.code.match(/\d+/);
-    if (m) max = Math.max(max, parseInt(m[0], 10));
-  }
-  const code = `CR${String(max + 1).padStart(2, "0")}`;
+  const code = await nextCode(supabase, "change_requests", projectId, "CR");
 
   const { error } = await supabase.from("change_requests").insert({
     project_id: projectId,

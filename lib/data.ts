@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
 import type { Role } from "@/lib/constants";
@@ -47,9 +48,10 @@ export type ProjectContext = {
   profile: Profile;
 };
 
-export async function getProjectContext(
+// cache(): the project layout and the page both call this; it runs once per request.
+export const getProjectContext = cache(async (
   projectId: string,
-): Promise<ProjectContext | null> {
+): Promise<ProjectContext | null> => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -70,4 +72,4 @@ export async function getProjectContext(
     role: membership.role as Role,
     profile: membership.profiles as unknown as Profile,
   };
-}
+});

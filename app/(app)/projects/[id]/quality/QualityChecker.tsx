@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { checkQuality, GRADE_LABEL, QUALITY_EXAMPLES } from "@/lib/quality";
+import { checkQuality, GRADE_LABEL, QUALITY_EXAMPLES, type QualityResult } from "@/lib/quality";
 import { StatusPill } from "@/components/ui";
+import Highlighted from "@/components/Highlighted";
 
-type Low = { id: string; code: string; title: string; description: string | null; quality_score: number | null };
+type Low = { id: string; code: string; title: string; quality: QualityResult };
 
 export default function QualityChecker({ projectId, lowest }: { projectId: string; lowest: Low[] }) {
   const [text, setText] = useState("");
@@ -100,12 +101,11 @@ export default function QualityChecker({ projectId, lowest }: { projectId: strin
             </thead>
             <tbody>
               {lowest.map((r) => {
-                const live = checkQuality(`${r.title}. ${r.description ?? ""}`);
                 return (
                   <tr key={r.id}>
                     <td><span className="id">{r.code}</span></td>
                     <td>{r.title}</td>
-                    <td><StatusPill value={live.grade} label={String(live.score)} /></td>
+                    <td><StatusPill value={r.quality.grade} label={String(r.quality.score)} /></td>
                     <td style={{ textAlign: "right" }}>
                       <Link className="btn sm" href={`/projects/${projectId}/requirements?open=${r.id}`}>Open</Link>
                     </td>
@@ -117,24 +117,6 @@ export default function QualityChecker({ projectId, lowest }: { projectId: strin
         )}
       </div>
     </div>
-  );
-}
-
-function Highlighted({ text, words }: { text: string; words: string[] }) {
-  if (words.length === 0) return <>{text}</>;
-  const escaped = words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-  const re = new RegExp(`\\b(${escaped.join("|")})\\b`, "gi");
-  const parts = text.split(re);
-  return (
-    <>
-      {parts.map((part, i) =>
-        words.some((w) => w.toLowerCase() === part.toLowerCase()) ? (
-          <span key={i} className="hl">{part}</span>
-        ) : (
-          <span key={i}>{part}</span>
-        ),
-      )}
-    </>
   );
 }
 

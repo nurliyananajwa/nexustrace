@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import CircuitView from "@/app/(app)/projects/[id]/requirements/CircuitView";
+import CircuitView from "@/components/CircuitView";
 
 type Requirement = { id: string; code: string; title: string; status: string };
 type Task = { id: string; requirement_id: string; title: string; status: string };

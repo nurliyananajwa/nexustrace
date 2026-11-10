@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { TEST_RESULT_LABEL, type TestResult } from "@/lib/constants";
 import { PageHeader, Empty } from "@/components/ui";
+import Modal from "@/components/Modal";
 import { recordResult, createTest } from "./actions";
 
 type Test = {
@@ -107,9 +108,7 @@ function NewTestModal({ projectId, reqs, onClose, onDone }: { projectId: string;
   }
 
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(20,25,35,0.4)", display: "grid", placeItems: "center", zIndex: 50, padding: 20 }}>
-      <div className="card" onClick={(e) => e.stopPropagation()} style={{ width: 500, maxWidth: "100%", padding: 24, maxHeight: "90vh", overflow: "auto" }}>
-        <h2 style={{ fontSize: 19, margin: "0 0 16px" }}>New test case</h2>
+    <Modal title="New test case" width={500} onClose={onClose}>
         <label className="label">What does this test check?</label>
         <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="For example: Signing in records a session" style={{ margin: "6px 0 14px" }} />
 
@@ -145,7 +144,6 @@ function NewTestModal({ projectId, reqs, onClose, onDone }: { projectId: string;
         {picked.length === 0 && title.trim().length >= 3 && (
           <p style={{ fontSize: 11.5, color: "var(--ink-3)", marginTop: 8 }}>Tick at least one requirement so the test is traceable.</p>
         )}
-      </div>
-    </div>
+    </Modal>
   );
 }

@@ -4,14 +4,9 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import Brand from "@/components/Brand";
 import "./signin.css";
 
-function Brand({ light = false }: { light?: boolean }) {
-  return <Link className={`login-brand ${light ? "login-brand-light" : ""}`} href="/" aria-label="NexusTrace home">
-    <span className="brand-mark" aria-hidden="true"><i /><i /><i /></span>
-    <span>Nexus<span>Trace</span></span>
-  </Link>;
-}
 
 function TraceIllustration() {
   return <div className="login-trace" role="img" aria-label="Requirement FR01 connected to a task and a passing test">
@@ -66,7 +61,7 @@ function SignInContent() {
   return <main className="login-page">
     <section className="login-story" aria-label="About NexusTrace">
       <div className="login-story-inner">
-        <Brand light />
+        <Brand className="login-brand login-brand-light" />
         <div className="login-story-content">
           <p className="login-overline">REQUIREMENT TRACEABILITY, MADE CLEAR</p>
           <h2>Follow the idea.<br /><span>See the impact.</span></h2>
@@ -79,7 +74,7 @@ function SignInContent() {
 
     <section className="login-entry" aria-label="Sign in">
       <div className="login-entry-inner">
-        <div className="login-mobile-brand"><Brand /></div>
+        <div className="login-mobile-brand"><Brand className="login-brand" /></div>
         <div className="login-entry-top"><Link href="/" className="login-back">← Back to home</Link></div>
         <div className="login-entry-main">
           {sent ? <>

@@ -1,14 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import Brand from "@/components/Brand";
 import "./home.css";
 
-function Brand() {
-  return <Link className="home-brand" href="/" aria-label="NexusTrace home">
-    <span className="brand-mark" aria-hidden="true"><i /><i /><i /></span>
-    <span>Nexus<span>Trace</span></span>
-  </Link>;
-}
 
 function HeroTrace() {
   return <div className="home-trace" role="img" aria-label="Example: a requirement connects to a build task and a passing test">
@@ -39,7 +34,7 @@ export default async function Landing() {
   return <main className="home-page">
     <div className="home-dark">
       <header className="home-header">
-        <Brand />
+        <Brand className="home-brand" />
         <nav aria-label="Home navigation"><a href="#how-it-works">How it works</a><a href="#two-views">Two views</a></nav>
         <Link className="home-header-signin" href="/signin">Open workspace <span aria-hidden="true">↗</span></Link>
       </header>
@@ -73,6 +68,6 @@ export default async function Landing() {
     </section>
 
     <section className="home-final"><div><p className="home-section-kicker">READY TO EXPLORE?</p><h2>Start with the full picture.</h2><p>Try the preview first, then open your own workspace when you&apos;re ready.</p></div><Link className="home-cta" href="/preview">Explore NexusTrace <span aria-hidden="true">→</span></Link></section>
-    <footer className="home-footer"><Brand /><span>Requirements · Work · Tests · Changes</span></footer>
+    <footer className="home-footer"><Brand className="home-brand" /><span>Requirements · Work · Tests · Changes</span></footer>
   </main>;
 }

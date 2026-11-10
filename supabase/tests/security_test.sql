@@ -1,6 +1,6 @@
 -- NexusTrace security test. Runs inside one transaction and leaves no data behind.
 -- Paste into the Supabase SQL editor. Every row in the result should show ok = true.
--- Result on 3 Nov 2026: 10 of 10 passed.
+-- 9 checks. Result on 10 Nov 2026: 9 of 9 passed.
 begin;
 create temp table t_res(n serial, step text, ok boolean, info text);
 grant all on t_res to authenticated; grant usage on sequence t_res_n_seq to authenticated;

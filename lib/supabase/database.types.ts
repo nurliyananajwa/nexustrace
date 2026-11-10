@@ -398,7 +398,6 @@ export type Database = {
           module_id: string | null
           priority: string
           project_id: string
-          quality_score: number | null
           status: string
           title: string
           type: string
@@ -414,7 +413,6 @@ export type Database = {
           module_id?: string | null
           priority?: string
           project_id: string
-          quality_score?: number | null
           status?: string
           title: string
           type?: string
@@ -430,7 +428,6 @@ export type Database = {
           module_id?: string | null
           priority?: string
           project_id?: string
-          quality_score?: number | null
           status?: string
           title?: string
           type?: string

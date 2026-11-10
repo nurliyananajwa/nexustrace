@@ -74,20 +74,26 @@ Most screen folders follow the same pattern:
 
 So to change what a screen *shows*, edit the `View` file. To change what it *saves*, edit `actions.ts`.
 
+The Requirements screen is bigger, so its pop-ups and detail panel each have their own file (`DetailPanel.tsx`, `NewRequirementModal.tsx`, `AddTaskModal.tsx`, `LinkTestModal.tsx`, `ProposeChangeModal.tsx`), with shared types in `types.ts`.
+
 ### Shared folders
 
 | Folder / file | What it is |
 |---|---|
 | `components/Sidebar.tsx` | The left menu on every project screen |
+| `components/CircuitView.tsx` | The Circuit view (used by Requirements and the preview) |
+| `components/Modal.tsx` | The pop-up window used by every form |
+| `components/Highlighted.tsx` | Highlights the words flagged by the quality checker |
+| `components/Brand.tsx` | The NexusTrace logo |
 | `components/ui.tsx` | Small shared pieces: page heading, status pills, empty state |
 | `lib/quality.ts` | The rule-based quality checker (scoring rules and penalties) |
+| `lib/codes.ts` | Makes the next readable ID (FR03, TC12, CR04) |
 | `lib/constants.ts` | App name, role names, status labels |
 | `lib/data.ts` | Helpers to load the signed-in user and their projects |
 | `lib/supabase/` | Connection to Supabase. `database.types.ts` is generated from the database, so don't edit it by hand |
 | `middleware.ts` | Sends signed-out visitors to the sign-in page |
 | `app/auth/` | Sign-in callback and sign-out |
 | `app/globals.css` | Colours and styles for the whole app |
-| `public/nexustrace-demo.html` | An earlier standalone design demo (transit-map view), open at `/nexustrace-demo.html` |
 
 ## Database and security
 
@@ -98,6 +104,7 @@ The database lives in Supabase. Its structure is saved as code in `supabase/migr
 | `0001_schema.sql` | The 14 tables, row-level security, version history, impact analysis, change approval and audit log |
 | `0002_test_run_order.sql` | The latest test run always counts as the current result |
 | `0003_private_helpers.sql` | Moves internal helpers out of the public API, and stops a team lead from making themselves supervisor |
+| `0004_drop_quality_score.sql` | Removes the stored quality score; the score is always calculated live from the wording |
 
 Key security rules (enforced in the database, not only the screens):
 
@@ -106,7 +113,7 @@ Key security rules (enforced in the database, not only the screens):
 - An approved requirement can only change through an approved change request, and every old version is kept.
 - Test history and the audit log can't be edited or deleted.
 
-`supabase/tests/security_test.sql` tries 10 access-control attacks as a team lead, a student, a supervisor and an outsider. Paste it into the Supabase SQL editor. Every row should show `ok = true`, and it leaves no data behind.
+`supabase/tests/security_test.sql` tries 9 access-control attacks as a team lead, a student, a supervisor and an outsider. Paste it into the Supabase SQL editor. Every row should show `ok = true`, and it leaves no data behind.
 
 ## Current status
 

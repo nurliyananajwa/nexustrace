@@ -17,12 +17,9 @@ export async function decideChange(projectId: string, crId: string, approve: boo
 
 export async function addComment(projectId: string, crId: string, body: string) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // author_id is filled in by the database from the signed-in user.
   const { error } = await supabase.from("change_request_comments").insert({
     change_request_id: crId,
-    author_id: user!.id,
     body: body.trim(),
   });
   if (error) return { error: error.message };

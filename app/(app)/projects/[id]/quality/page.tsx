@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui";
+import { checkQuality } from "@/lib/quality";
 import QualityChecker from "./QualityChecker";
 
 export const dynamic = "force-dynamic";
@@ -9,9 +10,14 @@ export default async function QualityPage({ params }: { params: Promise<{ id: st
   const supabase = await createClient();
   const { data: reqs } = await supabase
     .from("requirements")
-    .select("id, code, title, description, quality_score")
-    .eq("project_id", id)
-    .order("quality_score", { ascending: true, nullsFirst: false });
+    .select("id, code, title, description")
+    .eq("project_id", id);
+
+  // Scored live, so the list always matches the current wording.
+  const lowest = (reqs ?? [])
+    .map((r) => ({ ...r, quality: checkQuality(`${r.title}. ${r.description ?? ""}`) }))
+    .sort((a, b) => a.quality.score - b.quality.score)
+    .slice(0, 8);
 
   return (
     <>
@@ -19,7 +25,7 @@ export default async function QualityPage({ params }: { params: Promise<{ id: st
         title="Quality check"
         subtitle="Scores a requirement's wording against ISO/IEC/IEEE 29148 and flags what makes it hard to test. The same check runs on the requirement form."
       />
-      <QualityChecker projectId={id} lowest={(reqs ?? []).slice(0, 8)} />
+      <QualityChecker projectId={id} lowest={lowest} />
     </>
   );
 }

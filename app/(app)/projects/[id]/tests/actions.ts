@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { nextCode } from "@/lib/codes";
 
 export async function recordResult(projectId: string, testCaseId: string, result: "passed" | "failed" | "not_run") {
   const supabase = await createClient();
@@ -20,13 +21,7 @@ export async function recordResult(projectId: string, testCaseId: string, result
 
 export async function createTest(projectId: string, form: { title: string; requirementIds: string[]; result: "passed" | "failed" | "not_run" }) {
   const supabase = await createClient();
-  const { data } = await supabase.from("test_cases").select("code").eq("project_id", projectId).like("code", "TC%");
-  let max = 0;
-  for (const r of data ?? []) {
-    const m = r.code.match(/\d+/);
-    if (m) max = Math.max(max, parseInt(m[0], 10));
-  }
-  const code = `TC${String(max + 1).padStart(2, "0")}`;
+  const code = await nextCode(supabase, "test_cases", projectId, "TC");
 
   const { data: tc, error } = await supabase
     .from("test_cases")
